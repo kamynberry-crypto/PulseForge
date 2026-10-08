@@ -1,0 +1,9 @@
+PULSEFORGE
+==========
+
+1. Upload these files to a GitHub repository.
+2. Open Actions.
+3. Run "Build PulseForge Windows x64".
+4. Download the PulseForge-Windows-x64 artifact.
+
+Fortnite is the primary profile. My Games lets you select any .exe and use the same safe engine.

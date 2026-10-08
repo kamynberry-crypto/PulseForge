@@ -1,0 +1,102 @@
+<Window x:Class="PulseForge.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PulseForge" Width="1240" Height="780"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Bg}"
+        Foreground="{StaticResource Text}"
+        FontFamily="Segoe UI"
+        WindowStyle="None"
+        AllowsTransparency="False"
+        ResizeMode="CanResize">
+    <Window.Resources>
+        <Style x:Key="NavButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#132033"/>
+                    <Setter Property="Foreground" Value="{StaticResource Text}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="Primary" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="#041018"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="22,13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style x:Key="Secondary" TargetType="Button">
+            <Setter Property="Background" Value="#142033"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Line}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="#090F18" BorderBrush="{StaticResource Line}" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="18,22,18,10">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="38" Height="38" CornerRadius="11" Background="#102E3D">
+                            <TextBlock Text="⚡" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource Accent}"/>
+                        </Border>
+                        <StackPanel Margin="11,1,0,0">
+                            <TextBlock Text="PULSEFORGE" FontSize="17" FontWeight="Bold"/>
+                            <TextBlock Text="GAME OPTIMIZER" FontSize="9" Foreground="{StaticResource Accent}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Margin="10,16,10,0">
+                    <TextBlock Text="OPTIMIZE" FontSize="10" Foreground="{StaticResource Muted}" Margin="8,0,0,7"/>
+                    <Button Style="{StaticResource NavButton}" Content="⌂   Dashboard" Click="Dashboard_Click"/>
+                    <Button Style="{StaticResource NavButton}" Content="◈   Fortnite" Click="Fortnite_Click"/>
+                    <Button Style="{StaticResource NavButton}" Content="◉   My Games" Click="Games_Click"/>
+                    <Button Style="{StaticResource NavButton}" Content="⚙   Optimizations" Click="Optimizations_Click"/>
+                    <TextBlock Text="TOOLS" FontSize="10" Foreground="{StaticResource Muted}" Margin="8,22,0,7"/>
+                    <Button Style="{StaticResource NavButton}" Content="⌁   Network Test" Click="Network_Click"/>
+                    <Button Style="{StaticResource NavButton}" Content="✓   Safety &amp; Restore" Click="Safety_Click"/>
+                </StackPanel>
+
+                <Border DockPanel.Dock="Bottom" Margin="12" Padding="12" CornerRadius="10" Background="#0E1825" BorderBrush="{StaticResource Line}" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="SAFE MODE" FontWeight="Bold" Foreground="{StaticResource Good}"/>
+                        <TextBlock Text="Reversible Windows-side tuning" FontSize="11" Foreground="{StaticResource Muted}" Margin="0,3,0,0"/>
+                    </StackPanel>
+                </Border>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="54"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <TextBlock Text="PULSEFORGE  /  PERFORMANCE CONSOLE" VerticalAlignment="Center" Foreground="{StaticResource Muted}" FontSize="12"/>
+                <Border Width="270" Height="34" HorizontalAlignment="Right" CornerRadius="8" Background="#0E1724" BorderBrush="{StaticResource Line}" BorderThickness="1">
+                    <TextBlock Text="⌕  Search optimizations..." Foreground="{StaticResource Muted}" VerticalAlignment="Center" Margin="12,0"/>
+                </Border>
+            </Grid>
+
+            <ContentControl x:Name="PageHost" Grid.Row="1"/>
+        </Grid>
+    </Grid>
+</Window>
