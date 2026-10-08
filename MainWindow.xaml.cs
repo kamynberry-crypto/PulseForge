@@ -204,7 +204,7 @@ public partial class MainWindow : Window
             ("Power", "Use Windows High Performance plan", HighPerformance_Click),
             ("Cleanup", "Remove safe temporary files", Cleanup_Click),
             ("Priority", "Raise the selected game process", Priority_Click),
-            ("Network", "Run a latency test — no permanent network changes", Network_Click)
+            ("Network", "Run a latency test — no permanent network changes", NetworkTest_Click)
         };
         foreach (var item in items)
         {
@@ -228,7 +228,7 @@ public partial class MainWindow : Window
             {
                 new TextBlock { Text = "LATENCY LAB", FontSize = 20, FontWeight = FontWeights.Bold },
                 new TextBlock { Text = "Measure connection quality without changing your networking stack.", Foreground = (Brush)FindResource("Muted"), Margin = new Thickness(0,4,0,8) },
-                Action("Run Epic/Fortnite Endpoint Test", Network_Click, true),
+                Action("Run Epic/Fortnite Endpoint Test", NetworkTest_Click, true),
                 new TextBlock { Text = "Results appear here after the test.", Name = "NetworkResult", Margin = new Thickness(0,12,0,0), Foreground = (Brush)FindResource("Accent") }
             }
         }));
@@ -418,7 +418,7 @@ public partial class MainWindow : Window
         catch (Exception ex) { SetStatus("Priority change failed: " + ex.Message, false); }
     }
 
-    private async void Network_Click(object s, RoutedEventArgs e)
+    private async void NetworkTest_Click(object s, RoutedEventArgs e)
     {
         SetStatus("Testing Epic endpoints...");
         var hosts = new[] { "ping-nae.ds.on.epicgames.com", "ping-nac.ds.on.epicgames.com", "ping-eu.ds.on.epicgames.com" };
