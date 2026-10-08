@@ -18,7 +18,6 @@ public partial class MainWindow : Window
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "PulseForge", "Backups");
 
-    private Border _page = null!;
     private TextBlock _status = null!;
 
     public MainWindow()
@@ -197,7 +196,7 @@ public partial class MainWindow : Window
     private void ShowOptimizations()
     {
         var stack = new StackPanel();
-        var items = new[]
+        var items = new (string Name, string Description, RoutedEventHandler Click)[]
         {
             ("Game Mode", "Enable Windows Game Mode", EnableGameMode_Click),
             ("Capture", "Disable Game DVR background capture", DisableDvr_Click),
