@@ -28,3 +28,4 @@ PulseForge is a Windows x64 C#/.NET WPF gaming optimizer focused on Fortnite fir
 GitHub Actions builds a self-contained Windows x64 executable.
 
 The application requests administrator privileges because some Windows settings require elevation.
+\n\n## PulseForge 2.0 refresh\n\nThis refresh updates the application identity and visual theme to a graphite / forge-green competitive dashboard. It retains the existing Windows-native WPF architecture and adds a clearer system-snapshot entry in the optimization toolkit. Network tests measure endpoint response and do not guarantee lower game ping or higher FPS. Review each change and keep a restore path before applying system tweaks.\n

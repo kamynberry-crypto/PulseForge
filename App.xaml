@@ -3,15 +3,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <SolidColorBrush x:Key="Bg" Color="#070B12"/>
-        <SolidColorBrush x:Key="Panel" Color="#0D1420"/>
-        <SolidColorBrush x:Key="Panel2" Color="#111B2A"/>
-        <SolidColorBrush x:Key="Line" Color="#203044"/>
-        <SolidColorBrush x:Key="Text" Color="#F3F7FF"/>
-        <SolidColorBrush x:Key="Muted" Color="#8290A6"/>
-        <SolidColorBrush x:Key="Accent" Color="#39D5FF"/>
-        <SolidColorBrush x:Key="Accent2" Color="#7B61FF"/>
-        <SolidColorBrush x:Key="Good" Color="#38E6A5"/>
-        <SolidColorBrush x:Key="Warn" Color="#FFCA67"/>
+        <SolidColorBrush x:Key="Bg" Color="#070A0B"/>
+        <SolidColorBrush x:Key="Panel" Color="#101615"/>
+        <SolidColorBrush x:Key="Panel2" Color="#17201D"/>
+        <SolidColorBrush x:Key="Line" Color="#263832"/>
+        <SolidColorBrush x:Key="Text" Color="#F1F8F3"/>
+        <SolidColorBrush x:Key="Muted" Color="#91A69A"/>
+        <SolidColorBrush x:Key="Accent" Color="#B5FF35"/>
+        <SolidColorBrush x:Key="Accent2" Color="#63E6A7"/>
+        <SolidColorBrush x:Key="Good" Color="#77F2A5"/>
+        <SolidColorBrush x:Key="Warn" Color="#FFD166"/>
     </Application.Resources>
 </Application>
