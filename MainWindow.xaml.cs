@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +20,18 @@ public partial class MainWindow : Window
         "PulseForge", "Backups");
 
     private TextBlock _status = null!;
+    private readonly string gameLibraryFile = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "PulseForge", "games.json");
+    private List<GameEntry> _games = new();
+    private ListBox? _gameList;
+    private TextBlock? _monitorDetails;
+
+    private sealed class GameEntry
+    {
+        public string Name { get; set; } = "";
+        public string Path { get; set; } = "";
+    }
 
     public MainWindow()
     {
@@ -193,6 +206,140 @@ public partial class MainWindow : Window
         BuildPage("My Games", "Fortnite gets the deepest preset, while every Windows game can use the universal engine.", stack);
     }
 
+    private void ShowSystemMonitor()
+    {
+        var stack = new StackPanel();
+        var intro = new StackPanel();
+        intro.Children.Add(new TextBlock { Text = "SYSTEM OVERVIEW", FontSize = 20, FontWeight = FontWeights.Bold });
+        intro.Children.Add(new TextBlock { Text = "Refreshable Windows and storage information. CPU/GPU telemetry depends on available hardware drivers.", Foreground = (Brush)FindResource("Muted"), Margin = new Thickness(0, 4, 0, 10) });
+        _monitorDetails = new TextBlock { FontFamily = new FontFamily("Consolas"), FontSize = 14, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) };
+        intro.Children.Add(_monitorDetails);
+        intro.Children.Add(Action("↻ Refresh System Information", RefreshMonitor_Click, true));
+        intro.Children.Add(Action("Save System Report", SaveSystemReport_Click));
+        stack.Children.Add(Card(intro));
+        BuildPage("System Monitor", "A practical snapshot of your hardware, Windows version, memory use and drive capacity.", stack);
+        RefreshMonitorData();
+    }
+
+    private void RefreshMonitor_Click(object s, RoutedEventArgs e) => RefreshMonitorData();
+
+    private string BuildSystemReport()
+    {
+        var drive = new DriveInfo(Path.GetPathRoot(Environment.SystemDirectory)!);
+        var proc = Process.GetCurrentProcess();
+        var os = Environment.OSVersion;
+        var lines = new[]
+        {
+            "PULSEFORGE SYSTEM REPORT",
+            "Generated: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+            "Computer: " + Environment.MachineName,
+            "Windows: " + os.VersionString,
+            "64-bit OS: " + Environment.Is64BitOperatingSystem,
+            "Logical processors: " + Environment.ProcessorCount,
+            "System drive: " + drive.Name,
+            "Drive free: " + FormatBytes(drive.AvailableFreeSpace),
+            "Drive total: " + FormatBytes(drive.TotalSize),
+            "PulseForge process memory: " + FormatBytes(proc.WorkingSet64),
+            "Managed memory: " + FormatBytes(GC.GetTotalMemory(false)),
+            "",
+            "Note: this report does not estimate FPS or guarantee performance gains."
+        };
+        return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        string[] units = { "B", "KB", "MB", "GB", "TB" };
+        double size = bytes;
+        int unit = 0;
+        while (size >= 1024 && unit < units.Length - 1) { size /= 1024; unit++; }
+        return $"{size:0.##} {units[unit]}";
+    }
+
+    private void RefreshMonitorData()
+    {
+        try
+        {
+            if (_monitorDetails != null) _monitorDetails.Text = BuildSystemReport();
+            SetStatus("System information refreshed.");
+        }
+        catch (Exception ex) { SetStatus("Could not read all system information: " + ex.Message, false); }
+    }
+
+    private void SaveSystemReport_Click(object s, RoutedEventArgs e)
+    {
+        try
+        {
+            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PulseForge Reports");
+            Directory.CreateDirectory(folder);
+            var file = Path.Combine(folder, "PulseForge-System-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".txt");
+            File.WriteAllText(file, BuildSystemReport());
+            SetStatus("System report saved to Documents\\PulseForge Reports.");
+        }
+        catch (Exception ex) { SetStatus("Report export failed: " + ex.Message, false); }
+    }
+
+    private void LoadGameLibrary()
+    {
+        try
+        {
+            if (File.Exists(gameLibraryFile))
+                _games = JsonSerializer.Deserialize<List<GameEntry>>(File.ReadAllText(gameLibraryFile)) ?? new List<GameEntry>();
+        }
+        catch { _games = new List<GameEntry>(); }
+    }
+
+    private void SaveGameLibrary()
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(gameLibraryFile)!);
+        File.WriteAllText(gameLibraryFile, JsonSerializer.Serialize(_games, new JsonSerializerOptions { WriteIndented = true }));
+    }
+
+    private void RefreshGameList()
+    {
+        if (_gameList == null) return;
+        _gameList.ItemsSource = null;
+        _gameList.ItemsSource = _games;
+        if (_games.Count > 0) _gameList.SelectedIndex = 0;
+    }
+
+    private void AddGameToLibrary_Click(object s, RoutedEventArgs e)
+    {
+        var dlg = new OpenFileDialog { Filter = "Game executable (*.exe)|*.exe", Title = "Add a game to PulseForge" };
+        if (dlg.ShowDialog() != true) return;
+        if (_games.Any(g => string.Equals(g.Path, dlg.FileName, StringComparison.OrdinalIgnoreCase)))
+        {
+            SetStatus("That game is already in your library.", false);
+            return;
+        }
+        var name = Path.GetFileNameWithoutExtension(dlg.FileName);
+        _games.Add(new GameEntry { Name = name, Path = dlg.FileName });
+        SaveGameLibrary();
+        RefreshGameList();
+        SetStatus(name + " added to your game library.");
+    }
+
+    private void LaunchLibraryGame_Click(object s, RoutedEventArgs e)
+    {
+        if (_gameList?.SelectedItem is not GameEntry game) { SetStatus("Select a game first.", false); return; }
+        if (!File.Exists(game.Path)) { SetStatus("Game file not found. Remove it and add the current executable path again.", false); return; }
+        try
+        {
+            Process.Start(new ProcessStartInfo(game.Path) { WorkingDirectory = Path.GetDirectoryName(game.Path)! });
+            SetStatus("Launched " + game.Name + ".");
+        }
+        catch (Exception ex) { SetStatus("Launch failed: " + ex.Message, false); }
+    }
+
+    private void RemoveLibraryGame_Click(object s, RoutedEventArgs e)
+    {
+        if (_gameList?.SelectedItem is not GameEntry game) { SetStatus("Select a game to remove.", false); return; }
+        _games.Remove(game);
+        SaveGameLibrary();
+        RefreshGameList();
+        SetStatus(game.Name + " removed from your library.");
+    }
+
     private void ShowOptimizations()
     {
         var stack = new StackPanel();
@@ -261,6 +408,7 @@ public partial class MainWindow : Window
     }
 
     private void Dashboard_Click(object s, RoutedEventArgs e) => ShowDashboard();
+    private void Monitor_Click(object s, RoutedEventArgs e) => ShowSystemMonitor();
     private void Fortnite_Click(object s, RoutedEventArgs e) => ShowFortnite();
     private void Games_Click(object s, RoutedEventArgs e) => ShowGames();
     private void Optimizations_Click(object s, RoutedEventArgs e) => ShowOptimizations();
